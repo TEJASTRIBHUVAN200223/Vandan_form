@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form to PDF</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
+    input, select { width: 100%; padding: 8px; margin-top: 4px; }
+    button { margin-top: 20px; padding: 10px 20px; cursor: pointer; }
+  </style>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      background: #fff;
+      padding: 28px 32px;
+      border-radius: 14px;
+      box-shadow: 0 3px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+      color: #333;
+      text-align: center;
+      font-size: 22px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      outline: none;
+      transition: 0.2s;
+      background: #fafafa;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #8a3422;
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(138, 52, 34, 0.1);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 24px;
+      background: #8a3422;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #752a1b;
+    }
+  </style>
+</head>
+<body>
+    <div class="container">
+  <h2>Vandan Form → Receipt Generator</h2>
+
+  <form id="myForm">
+    <label>Customer Name</label>
+    <input type="text" id="name" required />
+
+    <label>Contact Number</label>
+    <input type="text" id="contact" required />
+
+    <label>City</label>
+    <input type="text" id="city" required />
+
+    <label>Pooja Type</label>
+    <input type="text" id="pooja" required />
+
+    <label>Pooja Date</label>
+    <input type="date" id="date" required />
+
+    <label>Total Amount</label>
+    <input type="number" id="amount" required />
+
+    <label>Amount Paid</label>
+    <input type="number" id="amount_paid" required />
+
+    <button type="submit">Download PDF</button>
+    </div>
+  </form>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    document.getElementById("myForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const contact = document.getElementById("contact").value;
+      const city = document.getElementById("city").value;
+      const amount = document.getElementById("amount").value;
+      const amount_paid = document.getElementById("amount_paid").value;
+      const pooja_type = document.getElementById("pooja").value;
+      const pooja_date = document.getElementById("date").value;
+
+      // Build receipt HTML
+      const receipt = document.createElement("div");
+      receipt.style.width = "600px";
+      receipt.style.padding = "30px";
+      receipt.style.fontFamily = "Arial";
+      receipt.innerHTML = `
+        <div style="
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px 10px;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+">
+
+  <!-- Logo + Header -->
+  <div style="text-align:center; margin-bottom:20px;">
+      <img src="logo.png" style="height:110px; object-fit:contain;" />
+      <h2 style="margin:10px 0 2px; color:#8a3422; font-size:20px; font-weight:600;">
+        Vandan Holy Services Private Limited
+      </h2>
+      <div style="font-size:14px; color:#444; margin-top:5px;">
+        📞 8104030300 &nbsp;&nbsp; ✉️ ops@vandanpandit.com
+      </div>
+  </div>
+
+  <hr style="border:0; border-top:2px solid #8a3422; margin:25px 0;" />
+
+  <!-- Booking Title -->
+  <div style="text-align:center; margin-bottom:20px;">
+      <h3 style="color:#8a3422; margin:0; font-size:20px;">BOOKING RECEIPT</h3>
+      <p style="margin:4px 0; font-size:14px; color:#444;">
+          Receipt No: VDN-2024-001234
+      </p>
+      <p style="margin:0; font-size:14px; color:#444;">
+          Date: ${new Date().toLocaleDateString()}
+      </p>
+  </div>
+
+  <!-- Customer Name Block -->
+  <div style="
+      background:#fdeceb;
+      padding:18px;
+      border-radius:14px;
+      margin-bottom:15px;
+      border:1px solid #f4d6d4;
+  ">
+      <div style="font-size:12px; color:#8a3422; font-weight:600;">Customer Name</div>
+      <div style="font-size:18px; margin-top:4px;">${name}</div>
+  </div>
+
+  <!-- City & Contact -->
+  <div style="display:flex; gap:15px; margin-bottom:20px;">
+      <div style="
+          flex:1; background:#f6f9fc; padding:15px; border-radius:12px;
+          border:1px solid #e3e8ee;
+      ">
+          <div style="font-size:12px; color:#555;">City</div>
+          <div style="font-size:16px; margin-top:4px;">${city}</div>
+      </div>
+
+      <div style="
+          flex:1; background:#f6f9fc; padding:15px; border-radius:12px;
+          border:1px solid #e3e8ee;
+      ">
+          <div style="font-size:12px; color:#555;">Contact Number</div>
+          <div style="font-size:16px; margin-top:4px;">${contact}</div>
+      </div>
+  </div>
+
+  <!-- Pooja Section -->
+  <div style="
+      background:#fdeceb;
+      padding:20px;
+      border-radius:16px;
+      border:1px solid #f4d6d4;
+      margin-bottom:25px;
+  ">
+      <div style="font-size:12px; color:#8a3422; font-weight:600;">Pooja</div>
+      <div style="font-size:18px; margin-top:5px;">${pooja_type}</div>
+
+      <div style="font-size:12px; margin-top:15px; color:#8a3422; font-weight:600;">
+        📅 Scheduled Date
+      </div>
+      <div style="font-size:17px; margin-top:5px;">
+        ${pooja_date}
+      </div>
+  </div>
+
+  <!-- Amount Section -->
+  <div style="margin:10px 0;">
+      <div style="display:flex; justify-content:space-between; font-size:17px; margin-bottom:12px;">
+          <span>Total Amount:</span>
+          <span>₹${amount}</span>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; font-size:17px; margin-bottom:12px;">
+          <span>Advance Received:</span>
+          <span style="color:#0b9c34; font-weight:600;">₹${amount_paid}</span>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; font-size:17px; margin-bottom:5px;">
+          <span>Pending Amount:</span>
+          <span style="color:#d00000; font-weight:600;">₹${amount - amount_paid}</span>
+      </div>
+
+      <p style="color:#cc0000; font-size:12px; margin-top:4px;">
+        *Pending amount to be paid after pooja
+      </p>
+  </div>
+
+  <hr style="border:0; border-top:1px solid #ddd; margin:25px 0;" />
+
+  <!-- Footer -->
+  <div style="text-align:center; margin-top:15px;">
+      <div style="font-size:15px; color:#8a3422; font-weight:600;">
+          🙏 Thank You for Your Booking 🙏
+      </div>
+      <div style="color:#666; margin-top:5px; font-size:13px;">
+      </div>
+  </div>
+
+</div>
+      `;
+
+      document.body.appendChild(receipt);
+
+      const canvas = await html2canvas(receipt);
+      const imgData = canvas.toDataURL("image/png");
+
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF("p", "pt", "a4");
+
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const imgWidth = pageWidth - 40;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight);
+      pdf.save(`${name}_receipt.pdf`);
+
+      receipt.remove();
+    });
+  </script>
+</body>
+</html>
